@@ -49,4 +49,6 @@ else:
     for num_col in numerical:
         data = QuantileDiscretizer(numBuckets = 10, inputCol = num_col, outputCol = num_col + "_binned").fit(data).transform(data)
         data = data.drop(num_col)
-    # Write to csv file
+    # Add index, write to csv file
+    data = data.withColumn("id", monotonically_increasing_id())
+    data.write.format("com.databricks.spark.csv").option("delimiter", "\t").save("task0.out",header = 'false')
