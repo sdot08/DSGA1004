@@ -10,7 +10,7 @@ hdfs dfs -put *.tsv /user/<netid>/
 ```
 If you want to check if all files are uploaded, type:
 ```
-Use hdfs dfs -ls /user/<netid>/*.tsv
+hdfs dfs -ls /user/<netid>/*.tsv
 ```
 **Don't forget to replace netid with your actual netid, also get rid of larger than and smaller than signs**
 
