@@ -54,7 +54,7 @@ if len(numerical) >= (len(numerical) + len(categorical)) * 0.75:
 else:
     # Ignore data set that contains less them 4 valid columns
     # Bin numerical columns and print
-    if len(numerical) + len(categorical) > 3:
+    if len(numerical) + len(categorical) > 0:
         for num_col in numerical:
             data = QuantileDiscretizer(numBuckets = 10, inputCol = num_col, outputCol = num_col + "_binned").fit(data).transform(data)
             data = data.drop(num_col)
