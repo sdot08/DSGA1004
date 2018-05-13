@@ -21,14 +21,15 @@ data = spark.createDataFrame(data, header)
 
 numerical = []
 categorical = []
+messy = []
 rows = data.count()
 
 for colname in header:
-    # If this col has limited unique vals, we consider it as categorical
-    if data.filter((data[colname] == "") | (data[colname] == " ") | (data[colname] == "NaN") | (data[colname] == "Unspecified") | isnan(data[colname])).count() > rows * 0.5:
+    # If this col contains too many blank entries, drop this col
+    if data.filter((data[colname] == " ") | (data[colname] == "") | (data[colname] == "NaN") | (data[colname] == "Unspecified") | isnan(data[colname])).count() > rows * 0.5:
         data = data.drop(colname)
     # If this col has limited unique vals, we consider it as categorical
-    elif data.select(colname).distinct().count() < thres:
+    elif data.select(colname).distinct().count() < rows * 0.1:
         categorical.append(colname)
     else:
         # Cast float strs to float, if success, consider it as numerical
@@ -43,13 +44,16 @@ for colname in header:
         if is_numerical:
             numerical.append(colname)
         else:
-            data = data.drop(colname)
+            messy.append(colname)
+        
+for messy_col in messy:
+    data = data.drop(messy_col)
 
 if len(numerical) >= (len(numerical) + len(categorical)) * 0.75:
     if (len(numerical) > 0):
         data = data.select(numerical)
         #data = data.withColumn("appended_index", monotonically_increasing_id())
-        data.write.format("com.databricks.spark.csv").option("delimiter", "\t").save("num-" + filename + ".out", header = "True")
+        data.write.format("com.databricks.spark.csv").option("delimiter", "\t").save("num-" + filename + ".out",header = "True")
 
 else:
     # Ignore data set that contains less them 4 valid columns
@@ -59,4 +63,4 @@ else:
             data = QuantileDiscretizer(numBuckets = 10, inputCol = num_col, outputCol = num_col + "_binned").fit(data).transform(data)
             data = data.drop(num_col)
             data = data.withColumn("appended_index", monotonically_increasing_id())
-            data.write.format("com.databricks.spark.csv").option("delimiter", "\t").save("cat-" + filename + ".out",header = "true")
+            data.write.format("com.databricks.spark.csv").option("delimiter", "\t").save("cat-" + filename + ".out",header = "False") 

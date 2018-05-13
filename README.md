@@ -27,3 +27,27 @@ Inside where you want to store all processed files:
 for f in `hdfs dfs -ls -d /user/<netid>/*.out/ | grep <netid> | awk '{print $8}' | xargs -n 1 basename`; do hfs -getmerge $f ${f%.*}$".tsv"; done;
 ```
 This preserves the original .out file name. For example, ABC.out is merged to ABC.tsv 
+
+#### Run Spark AVF
+```
+./Spark_AVF/run_spark_avf.sh
+
+```
+This will output <filename>_outliers and <filename>_null which will contain the null data and outliers of the file.
+The default percent of outliers is 5%. It can be changed in run_spark_avf.sh.
+  
+#### Run MR-AVF
+```
+./MR_AVF/MRAVF_run.sh
+<type the location of the file>
+```
+This will output answer which will contain the outliers of the file.
+
+#### Compare AFV and MR-AVF
+```
+./spark_AVF/run_spark_avf_compare.sh
+<type the name of the file>
+./MR_AVF/MRAVF_run.sh
+<type the location of the file>
+```
+This will output the time taken to implement MR-AVF and Spark AVF respectively. It is worth noting that the input file for MR-AVF have been cleaned by a alternative cleaner cleaner_mr with the header = False.
