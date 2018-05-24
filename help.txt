@@ -1,0 +1,18 @@
+1. Inside GROUP10 file:
+
+hdfs dfs -put *.tsv /user/<netid>/
+
+Upload all tsv files to HDFS
+Use hdfs dfs -ls /user/<netid>/*.tsv to check if all are uploaded
+
+2. Apply cleaner to all tsv files by:
+
+for f in `hdfs dfs -ls /user/<netid>/*.tsv | grep <netid> | awk '{print $8}'`;do spark-submit --conf spark.pyspark.python=/share/apps/python/3.4.4/bin/python <your file path>/cleaner.py $f; done;
+
+Note this will write all files that ready for clustering as num-<orioginal name>.out, and all files ready for AVF as cat-<original name>.out, on your HDFS file
+
+3. Merge all .out files to .tsv on Dumbo local:
+
+for f in `hdfs dfs -ls -d /user/<netid>/*.out/ | grep <netid> | awk '{print $8}' | xargs -n 1 basename`; do hfs -getmerge $f ${f%.*}$".tsv"; done;
+
+This preserves the original .out file name. For example, ABC.out is merged to ABC.tsv 
