@@ -1,5 +1,8 @@
 # DSGA1004
 
+## Where to see results?
+See all results here: <a href="https://drive.google.com/drive/folders/11vk9Bb8C9-Ge0SjPut09yIiDfpMcA83B?usp=sharing">Google Drive</a>
+
 ## How to execute the whole process
 To execute the whole process on NYU Dumbo, make sure that you've logged in and have internet connection.
 
